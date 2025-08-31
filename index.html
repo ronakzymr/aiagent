@@ -195,6 +195,10 @@
       -webkit-appearance: none;
       appearance: none;
       min-height: 48px;
+      resize: none;
+      font-family: inherit;
+      line-height: 1.4;
+      overflow-y: hidden;
     }
 
     #input::placeholder {
@@ -373,6 +377,7 @@
         padding: 10px 16px;
         font-size: 16px;
         min-height: 44px;
+        max-height: 100px;
       }
 
       .send-btn {
@@ -467,6 +472,7 @@
         padding: 8px 14px;
         font-size: 16px;
         min-height: 40px;
+        max-height: 80px;
       }
 
       .send-btn {
@@ -513,6 +519,7 @@
       #input {
         min-height: 36px;
         padding: 6px 14px;
+        max-height: 60px;
       }
 
       .send-btn {
@@ -573,7 +580,7 @@
 
     <div class="chat-input-container">
       <div class="input-group">
-        <input id="input" type="text" placeholder="Type your message..." onkeypress="handleKeyPress(event)" autocomplete="off" autocorrect="off" autocapitalize="sentences">
+        <textarea id="input" placeholder="Type your message..." onkeydown="handleKeyDown(event)" autocomplete="off" autocorrect="off" autocapitalize="sentences" rows="1"></textarea>
         <button class="send-btn" onclick="send()" id="sendBtn" aria-label="Send message">
           ➤
         </button>
@@ -645,11 +652,18 @@
       }, 100);
     }
 
-    function handleKeyPress(event) {
+    function handleKeyDown(event) {
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
         send();
       }
+    }
+
+    // Auto-resize textarea based on content
+    function autoResizeTextarea() {
+      const textarea = document.getElementById('input');
+      textarea.style.height = 'auto';
+      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px'; // Max height of 120px
     }
 
     async function send() {
@@ -663,6 +677,9 @@
       // Add user message
       appendMessage("You", message);
       input.value = "";
+      
+      // Reset textarea height
+      input.style.height = '48px';
 
       // Show typing indicator
       showTyping();
@@ -729,6 +746,9 @@
       
       // Ensure proper sizing on load
       setViewportHeight();
+      
+      // Add input event listener for auto-resize
+      input.addEventListener('input', autoResizeTextarea);
     });
 
     // Handle visibility change to refocus input
