@@ -176,6 +176,15 @@
       backdrop-filter: blur(10px);
     }
 
+    .mobile-hint {
+      display: none;
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      font-style: italic;
+    }
+
     .input-group {
       display: flex;
       gap: 10px;
@@ -398,6 +407,10 @@
       .welcome-message p {
         font-size: 12px;
       }
+
+      .mobile-hint {
+        display: block;
+      }
     }
 
     /* Tablet and medium screens */
@@ -579,8 +592,9 @@
     </div>
 
     <div class="chat-input-container">
+      <div class="mobile-hint">💡 Press Enter for new line, tap send button to send message</div>
       <div class="input-group">
-        <textarea id="input" placeholder="Type your message..." onkeydown="handleKeyDown(event)" autocomplete="off" autocorrect="off" autocapitalize="sentences" rows="1"></textarea>
+        <textarea id="input" placeholder="Type your message... (Tap send button to send)" onkeydown="handleKeyDown(event)" autocomplete="off" autocorrect="off" autocapitalize="sentences" rows="1"></textarea>
         <button class="send-btn" onclick="send()" id="sendBtn" aria-label="Send message">
           ➤
         </button>
@@ -653,10 +667,23 @@
     }
 
     function handleKeyDown(event) {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        send();
+      // On mobile, allow Enter for new lines and use a different key combination for sending
+      if (event.key === 'Enter') {
+        if (event.shiftKey || isMobileDevice()) {
+          // Allow new line on Shift+Enter or on mobile devices
+          return;
+        } else {
+          // Send message on Enter (desktop only)
+          event.preventDefault();
+          send();
+        }
       }
+    }
+
+    // Check if device is mobile
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+             window.innerWidth <= 768;
     }
 
     // Auto-resize textarea based on content
